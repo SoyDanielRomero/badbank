@@ -1,6 +1,7 @@
 function CreateAccount() {
-  function createaccount() {
-    return 'hola';
+  const ctx = React.useContext(UserContext);
+  function createaccount(name, email, password) {
+    ctx.users.push({ name, email, password, balance: 100, loged: false });
   }
   return (
     <div className='container'>
@@ -11,6 +12,7 @@ function CreateAccount() {
         hideEmail={false}
         hidePassword={false}
         hideAmount={true}
+        hideBalance={true}
         handleButton='Create New Account'
         handle={createaccount}
         successButton='Add Another Account'

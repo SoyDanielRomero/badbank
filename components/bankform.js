@@ -5,6 +5,7 @@ function BankForm({
   hideEmail,
   hidePassword,
   hideAmount,
+  hideBalance,
   handleButton,
   handle,
   successButton,
@@ -14,8 +15,8 @@ function BankForm({
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [balance, setBalance] = React.useState(0);
   const [amount, setAmount] = React.useState(0);
+  const [balance, setBalance] = React.useState(0);
   const [loged, setLoged] = React.useState('');
   const ctx = React.useContext(UserContext);
 
@@ -29,10 +30,19 @@ function BankForm({
   }
 
   function handleAction() {
-    if (!validate(name, 'Empty Name')) return;
-    if (!validate(email, 'Empty Email')) return;
-    if (!validate(password, 'Empty Password')) return;
-    ctx.users.push({ name, email, password, balance: 100 });
+    if (!hideName) {
+      if (!validate(name, 'Empty Name')) return;
+    }
+    if (!hideEmail) {
+      if (!validate(email, 'Empty Email')) return;
+    }
+    if (!hidePassword) {
+      if (!validate(password, 'Empty Password')) return;
+    }
+    if (!hideAmount) {
+      if (!validate(amount, 'Empty Amount')) return;
+    }
+    handle(name, email, password, loged, amount);
     setShow(false);
   }
 
@@ -41,6 +51,18 @@ function BankForm({
     setEmail('');
     setPassword('');
     setShow(true);
+  }
+
+  function logout(email) {
+    ctx.users.filter((user) => {
+      console.log('loged: ', user.loged);
+      console.log('user email: ', user.email);
+      console.log('email: ', email);
+      if (user.email === email[0].email) {
+        user.loged = false;
+        console.log('loged: ', user.loged);
+      }
+    });
   }
   return (
     <Card
@@ -101,6 +123,42 @@ function BankForm({
                 <br />
               </>
             )}
+            {hideAmount ? (
+              <></>
+            ) : (
+              <>
+                Amount
+                <br />
+                <input
+                  type='number'
+                  className='form-control'
+                  id='amount'
+                  placeholder='$'
+                  onChange={(e) => setAmount(e.currentTarget.value)}
+                />
+                <br />
+              </>
+            )}
+            {/* {hideBalance ? (
+              <></>
+            ) : (
+              <>
+                Amount
+                <br />
+                <span>
+                  $
+                  {() => {
+                    let total = ctx.users.filter((user) => user.balance);
+                    let test2 = Number(total[0].balance);
+                    console.log('total', test2);
+
+                    setBalance(test2);
+                    return balance;
+                  }}
+                </span>
+                <br />
+              </>
+            )} */}
             <button
               type='submit'
               className='btn btn-light'
@@ -110,10 +168,34 @@ function BankForm({
           </>
         ) : (
           <>
-            <h5>Sucess!!!</h5>
-            <button type='submit' className='btn btn-light' onClick={clearform}>
-              {successButton}
-            </button>
+            {ctx.users.filter((user) => {
+              user.loged == true;
+            }) || successButton === 'Add Another Account' ? (
+              <>
+                <h5>Sucess!!!</h5>
+                <button
+                  type='submit'
+                  className='btn btn-light'
+                  onClick={() => {
+                    if (successButton === 'Logout') {
+                      logout(
+                        ctx.users.filter((user) => {
+                          console.log('user email2: ', user.email);
+                          return user.email;
+                        })
+                      );
+                    } else {
+                      clearform();
+                    }
+                  }}>
+                  {successButton}
+                </button>
+              </>
+            ) : (
+              <>
+                <h5>:D</h5>
+              </>
+            )}
           </>
         )
       }

@@ -11,6 +11,7 @@ function BadBank() {
                 email: 'daniromerro@gmail.com',
                 password: 'secret',
                 balance: 100,
+                loged: false,
               },
             ],
           }}>
